@@ -267,7 +267,8 @@ class PAIR(AttackerBase):
                     stream.jailbreak_prompt = stream.attack_attrs[
                         "attack_conversation"
                     ].get_prompt()
-                    logging.info("DEBUG", stream.jailbreak_prompt)
+                    logging.info("DEBUG")
+                    logging.info(stream.jailbreak_prompt)
 
                 for _ in range(self.max_n_attack_attempts):
                     new_instance = self.mutations[0](
