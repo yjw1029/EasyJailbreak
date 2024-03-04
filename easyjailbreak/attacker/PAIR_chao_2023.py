@@ -17,7 +17,7 @@ from easyjailbreak.attacker.attacker_base import AttackerBase
 from easyjailbreak.datasets.jailbreak_datasets import JailbreakDataset, Instance
 from easyjailbreak.seed.seed_template import SeedTemplate
 from easyjailbreak.mutation.generation import HistoricalInsight
-from easyjailbreak.models import OpenaiModel, HuggingfaceModel, vllmModel
+from easyjailbreak.models import OpenaiModel, HuggingfaceModel, vLLMModel
 from easyjailbreak.metrics.Evaluator.Evaluator_GenerativeGetScore import EvaluatorGenerativeGetScore
 
 __all__ = ['PAIR']
