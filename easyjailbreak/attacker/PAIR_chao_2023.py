@@ -17,7 +17,7 @@ from easyjailbreak.attacker.attacker_base import AttackerBase
 from easyjailbreak.datasets.jailbreak_datasets import JailbreakDataset, Instance
 from easyjailbreak.seed.seed_template import SeedTemplate
 from easyjailbreak.mutation.generation import HistoricalInsight
-from easyjailbreak.models import OpenaiModel, HuggingfaceModel
+from easyjailbreak.models import OpenaiModel, HuggingfaceModel, vllmModel
 from easyjailbreak.metrics.Evaluator.Evaluator_GenerativeGetScore import EvaluatorGenerativeGetScore
 
 __all__ = ['PAIR']
@@ -226,7 +226,7 @@ class PAIR(AttackerBase):
                     logging.info(f"Failed to generate output after {self.max_n_attack_attempts} attempts. Terminating.")
                     stream.jailbreak_prompt = stream.query
                 # Get target responses
-                if isinstance(self.target_model, OpenaiModel):
+                if isinstance(self.target_model, OpenaiModel) or isinstance(self.target_model, vllmModel):
                     stream.target_responses = [
                         self.target_model.generate(stream.jailbreak_prompt, max_tokens=self.target_max_n_tokens,
                                                    temperature=self.target_temperature, top_p=self.target_top_p)]
