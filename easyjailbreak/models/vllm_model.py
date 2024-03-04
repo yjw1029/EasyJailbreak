@@ -115,3 +115,6 @@ class vLLMModel(BlackBoxModelBase):
         responses = self.model.generate(prompts, sampling_params)
         responses = [output.outputs[0].text for output in responses]
         return responses
+
+    def set_system_message(self, system_message: str):
+        self.conversation.system_message = system_message

@@ -1,7 +1,7 @@
 import logging
 import warnings
 from .model_base import BlackBoxModelBase
-from openai import OpenAI
+from openai import OpenAI, AzureOpenAI
 from fastchat.conversation import get_conv_template
 
 class OpenaiModel(BlackBoxModelBase):
@@ -60,3 +60,18 @@ class OpenaiModel(BlackBoxModelBase):
                               'Using list[list[str]] will avoid this warning.')
             responses.append(self.generate(conversation, **kwargs))
         return responses
+
+
+class AzureOpenaiModel(OpenaiModel):
+    def __init__(self, model_name: str, api_keys: str, generation_config=None):
+        """
+        Initializes the OpenAI model with necessary parameters.
+        :param str model_name: The name of the model to use.
+        :param str api_keys: API keys for accessing the OpenAI service.
+        :param str template_name: The name of the conversation template, defaults to 'chatgpt'.
+        :param dict generation_config: Configuration settings for generation, defaults to an empty dictionary.
+        """
+        self.client = AzureOpenAI(api_key=api_keys)
+        self.model_name = model_name
+        self.conversation = get_conv_template('chatgpt')
+        self.generation_config = generation_config if generation_config is not None else {}
