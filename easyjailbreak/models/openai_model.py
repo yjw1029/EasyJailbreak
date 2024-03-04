@@ -4,6 +4,7 @@ from .model_base import BlackBoxModelBase
 from openai import OpenAI, AzureOpenAI
 from fastchat.conversation import get_conv_template
 
+
 class OpenaiModel(BlackBoxModelBase):
     def __init__(self, model_name: str, api_keys: str, generation_config=None):
         """
@@ -15,8 +16,10 @@ class OpenaiModel(BlackBoxModelBase):
         """
         self.client = OpenAI(api_key=api_keys)
         self.model_name = model_name
-        self.conversation = get_conv_template('chatgpt')
-        self.generation_config = generation_config if generation_config is not None else {}
+        self.conversation = get_conv_template("chatgpt")
+        self.generation_config = (
+            generation_config if generation_config is not None else {}
+        )
 
     def set_system_message(self, system_message: str):
         """
@@ -38,7 +41,9 @@ class OpenaiModel(BlackBoxModelBase):
         if isinstance(messages, str):
             messages = [messages]
         for index, message in enumerate(messages):
-            self.conversation.append_message(self.conversation.roles[index % 2], message)
+            self.conversation.append_message(
+                self.conversation.roles[index % 2], message
+            )
         response = self.client.chat.completions.create(
             model=self.model_name,
             messages=self.conversation.to_openai_api_messages(),
@@ -56,14 +61,23 @@ class OpenaiModel(BlackBoxModelBase):
         responses = []
         for conversation in conversations:
             if isinstance(conversation, str):
-                warnings.warn('For batch generation based on several conversations, provide a list[str] for each conversation. '
-                              'Using list[list[str]] will avoid this warning.')
+                warnings.warn(
+                    "For batch generation based on several conversations, provide a list[str] for each conversation. "
+                    "Using list[list[str]] will avoid this warning."
+                )
             responses.append(self.generate(conversation, **kwargs))
         return responses
 
 
 class AzureOpenaiModel(OpenaiModel):
-    def __init__(self, model_name: str, api_keys: str, generation_config=None):
+    def __init__(
+        self,
+        model_name: str,
+        api_keys: str = None,
+        api_version: str = "2023-12-01-preview",
+        azure_endpoint: str = None,
+        generation_config=None,
+    ):
         """
         Initializes the OpenAI model with necessary parameters.
         :param str model_name: The name of the model to use.
@@ -71,7 +85,13 @@ class AzureOpenaiModel(OpenaiModel):
         :param str template_name: The name of the conversation template, defaults to 'chatgpt'.
         :param dict generation_config: Configuration settings for generation, defaults to an empty dictionary.
         """
-        self.client = AzureOpenAI(api_key=api_keys)
+        self.client = AzureOpenAI(
+            api_key=api_keys,
+            api_version=api_version,
+            azure_endpoint=azure_endpoint,
+        )
         self.model_name = model_name
-        self.conversation = get_conv_template('chatgpt')
-        self.generation_config = generation_config if generation_config is not None else {}
+        self.conversation = get_conv_template("chatgpt")
+        self.generation_config = (
+            generation_config if generation_config is not None else {}
+        )
