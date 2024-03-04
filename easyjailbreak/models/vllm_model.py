@@ -55,7 +55,7 @@ class vLLMModel(BlackBoxModelBase):
             dtype = "float16"
 
         self.model = LLM(
-            model=self.config["model_name"],
+            model=self.model_name,
             trust_remote_code=self.trust_remote_code,
             tensor_parallel_size=self.tensor_parallel_size,
             dtype=dtype,
@@ -70,7 +70,7 @@ class vLLMModel(BlackBoxModelBase):
             stop_token_ids=self.conversation.stop_token_ids,
         )
         return self.generation_config
-    
+
     def get_prompt(self, messages, clear_old_history=True, **kwargs):
         if clear_old_history:
             self.conversation.messages = []
@@ -110,8 +110,8 @@ class vLLMModel(BlackBoxModelBase):
                     "Using list[list[str]] will avoid this warning."
                 )
             prompts.append(self.get_prompt(conversation, **kwargs))
-            
+
         sampling_params = self.load_generation_config()
         responses = self.model.generate(prompts, sampling_params)
-        responses = [output.outputs[0].text for output in responses]        
+        responses = [output.outputs[0].text for output in responses]
         return responses
