@@ -226,7 +226,7 @@ class PAIR(AttackerBase):
                     logging.info(f"Failed to generate output after {self.max_n_attack_attempts} attempts. Terminating.")
                     stream.jailbreak_prompt = stream.query
                 # Get target responses
-                if isinstance(self.target_model, OpenaiModel) or isinstance(self.target_model, vllmModel):
+                if isinstance(self.target_model, OpenaiModel) or isinstance(self.target_model, vLLMModel):
                     stream.target_responses = [
                         self.target_model.generate(stream.jailbreak_prompt, max_tokens=self.target_max_n_tokens,
                                                    temperature=self.target_temperature, top_p=self.target_top_p)]
