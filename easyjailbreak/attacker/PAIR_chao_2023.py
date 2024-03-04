@@ -142,6 +142,12 @@ class PAIR(AttackerBase):
                     "top_p": attack_top_p,
                     "eos_token_id": self.attack_model.tokenizer.eos_token_id,
                 }
+            elif isinstance(self.attack_model, vLLMModel):
+                self.attack_model.generation_config = {
+                    "max_tokens": attack_max_n_tokens,
+                    "temperature": attack_temperature,
+                    "top_p": attack_top_p,
+                }
 
         if (
             isinstance(self.eval_model, OpenaiModel)
@@ -158,6 +164,14 @@ class PAIR(AttackerBase):
             self.eval_model.generation_config = {
                 "do_sample": True,
                 "max_new_tokens": self.judge_max_n_tokens,
+                "temperature": self.judge_temperature,
+            }
+        elif (
+            isinstance(self.eval_model, vLLMModel)
+            and self.eval_model.generation_config == {}
+        ):
+            self.eval_model.generation_config = {
+                "max_tokens": self.judge_max_n_tokens,
                 "temperature": self.judge_temperature,
             }
 
@@ -249,6 +263,11 @@ class PAIR(AttackerBase):
                     stream.jailbreak_prompt = stream.attack_attrs[
                         "attack_conversation"
                     ].to_openai_api_messages()
+                if isinstance(self.attack_model, vLLMModel):
+                    stream.jailbreak_prompt = stream.attack_attrs[
+                        "attack_conversation"
+                    ].get_prompt()
+                    logging.info("DEBUG", stream.jailbreak_prompt)
 
                 for _ in range(self.max_n_attack_attempts):
                     new_instance = self.mutations[0](

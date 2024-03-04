@@ -28,21 +28,17 @@ class vLLMModel(BlackBoxModelBase):
     def __init__(
         self,
         model_name,
-        tensor_parallel_size=1,
-        trust_remote_code=False,
-        max_new_tokens=2048,
-        temperature=0,
+        trust_remote_code=True,
+        generation_config={},
         **kwargs,
     ):
         self.model_name = model_name
-        self.tensor_parallel_size = tensor_parallel_size
+        self.tensor_parallel_size = torch.cuda.device_count()
         self.trust_remote_code = trust_remote_code
-        self.max_new_tokens = max_new_tokens
-        self.temperature = temperature
 
         self.model = self.load_model()
         self.conversation = self.get_conv_template()
-        self.generation_config = self.load_generation_config()
+        self.generation_config = generation_config
 
     def get_conv_template(self):
         conv_template = fastchat.model.get_conversation_template(self.model_name)
@@ -64,8 +60,9 @@ class vLLMModel(BlackBoxModelBase):
 
     def load_generation_config(self):
         self.generation_config = SamplingParams(
-            temperature=self.temperature,
-            max_tokens=self.max_new_tokens,
+            temperature=self.generation_config.get("temperature", 1),
+            max_tokens=self.generation_config.get("max_new_tokens", 2048),
+            top_p=self.generation_config.get("top_p", 1),
             stop=self.conversation.stop_str,
             stop_token_ids=self.conversation.stop_token_ids,
         )
