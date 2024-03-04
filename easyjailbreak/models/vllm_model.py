@@ -41,7 +41,7 @@ class vLLMModel(BlackBoxModelBase):
         self.temperature = temperature
 
         self.model = self.load_model()
-        self.conversation = self.get_conv_template(self.model_name)
+        self.conversation = self.get_conv_template()
         self.generation_config = self.load_generation_config()
 
     def get_conv_template(self):
