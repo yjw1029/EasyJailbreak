@@ -59,14 +59,14 @@ class vLLMModel(BlackBoxModelBase):
         return self.model
 
     def load_generation_config(self):
-        self.generation_config = SamplingParams(
+        sampling_params = SamplingParams(
             temperature=self.generation_config.get("temperature", 1),
             max_tokens=self.generation_config.get("max_new_tokens", 2048),
             top_p=self.generation_config.get("top_p", 1),
             stop=self.conversation.stop_str,
             stop_token_ids=self.conversation.stop_token_ids,
         )
-        return self.generation_config
+        return sampling_params
 
     def get_prompt(self, messages, clear_old_history=True, **kwargs):
         if clear_old_history:

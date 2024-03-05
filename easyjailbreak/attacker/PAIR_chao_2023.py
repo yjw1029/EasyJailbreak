@@ -249,7 +249,7 @@ class PAIR(AttackerBase):
                     stream.attack_attrs["attack_conversation"].roles[0],
                     stream.jailbreak_prompt,
                 )
-                if isinstance(self.attack_model, HuggingfaceModel):
+                if isinstance(self.attack_model, HuggingfaceModel) or isinstance(self.attack_model, vLLMModel):
                     stream.attack_attrs["attack_conversation"].append_message(
                         stream.attack_attrs["attack_conversation"].roles[1],
                         init_message,
@@ -259,16 +259,12 @@ class PAIR(AttackerBase):
                     ].get_prompt()[
                         : -len(stream.attack_attrs["attack_conversation"].sep2)
                     ]
+                    logging.info("DEBUG")
+                    logging.info(stream.jailbreak_prompt)
                 if isinstance(self.attack_model, OpenaiModel):
                     stream.jailbreak_prompt = stream.attack_attrs[
                         "attack_conversation"
                     ].to_openai_api_messages()
-                if isinstance(self.attack_model, vLLMModel):
-                    stream.jailbreak_prompt = stream.attack_attrs[
-                        "attack_conversation"
-                    ].get_prompt()
-                    logging.info("DEBUG")
-                    logging.info(stream.jailbreak_prompt)
 
                 for _ in range(self.max_n_attack_attempts):
                     new_instance = self.mutations[0](
